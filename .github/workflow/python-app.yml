@@ -1,0 +1,10 @@
+name: Python application
+
+on:
+push:
+branches: [ "master", "ai", "poetry" ]
+pull_request:
+
+jobs:
+build:
+runs-on: ubuntu-latest
