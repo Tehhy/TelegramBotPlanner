@@ -2,7 +2,7 @@ import os
 import telebot
 import random
 
-token = os.environ.get("TOKEN")
+token = os.environ.get("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(token)
 
 RANDOM_TASKS = ["Read a chapter of Ulysses @Reading", "Compliment a stranger @Crazy",
@@ -72,4 +72,3 @@ def show(message):
             result += f"There are no tasks for date {date}\n"
     bot.send_message(message.chat.id, result)
 
-bot.polling(none_stop=True)
