@@ -1,17 +1,26 @@
-[project]
+[tool.poetry]
 name = "telegrambotplanner"
 version = "0.1.0"
 description = "Telegram tasks planner with integrated AI responses"
-authors = [
-    {name = "Alena Nakidkina",email = "alena.nakidkina@gmail.com"}
-]
-requires-python = ">=3.12"
-dependencies = [
-    "telebot (>=0.0.5,<0.0.6)"
-]
+authors = ["Alena Nakidkina <alena.nakidkina@gmail.com>"]
+readme = "README.md"
+packages = [] # Это явно говорит: "Не ищи папки с кодом для установки"
 
+[tool.poetry.dependencies]
+python = "^3.12"
+pytelegrambotapi = "^4.31.0"
+python-dotenv = "^1.2.2"
+google-generativeai = "^0.8.6"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.2,<10.0.0)",
+    "pre-commit (>=4.5.1,<5.0.0)",
+    "black (>=26.1.0,<27.0.0)",
+    "ruff (>=0.15.4,<0.16.0)",
+    "isort (>=8.0.1,<9.0.0)"
+]
