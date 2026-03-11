@@ -30,12 +30,6 @@ An intelligent task management assistant integrated with Gemini AI.
 * Note-taking functionality. (planned)          
 * AI response styles options. (planned)
    
-### 🧹 Development Tools
-We use a modern toolchain to keep the code clean and consistent:
-* **Pre-commit** — Framework for managing git hooks.
-* **Ruff** — An extremely fast Python linter and code formatter.
-* **Black** — The uncompromising code formatter.
-* **Isort** — Proper sorting of imports.
 
 ## 🚀 Quick Start
 ### 1. Prerequisites
