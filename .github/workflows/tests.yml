@@ -1,9 +1,10 @@
-name: Python application
+name: Python application and Tests
 
 on:
   push:
-    branches: [ "master", "ai", "poetry" ]
+    branches: [ "master", "ai", "poetry", "pytest", "env_file_and_example" ]
   pull_request:
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -20,12 +21,12 @@ jobs:
     - name: Install Poetry
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Install dependencies
       run: |
         poetry install --no-root
 
-    - name: Run tests (optional)
+    - name: Run tests
       run: |
-        # poetry run pytest
-        echo "Dependencies installed successfully!"
+        poetry run pytest
