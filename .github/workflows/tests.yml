@@ -28,5 +28,7 @@ jobs:
         poetry install --no-root
 
     - name: Run tests
+      env:
+        PYTHONPATH: ./src
       run: |
         poetry run pytest
