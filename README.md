@@ -1,5 +1,5 @@
 # 📅 Telegram Task Planner Bot
-![Build Status](https://github.com/Tehhy/TelegramBotPlanner/actions/workflows/python-app.yml/badge.svg)
+[![Python application and Tests](https://github.com/Tehhy/TelegramBotPlanner/actions/workflows/tests.yml/badge.svg)](https://github.com/Tehhy/TelegramBotPlanner/actions/workflows/tests.yml)
 
 An intelligent task management assistant integrated with Gemini AI.
 
