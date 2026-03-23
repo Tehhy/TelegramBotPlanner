@@ -1,12 +1,18 @@
 import logging
+import os
 
 from my_bot.Telebot import bot
+
+log_dir = "logs"
+os.makedirs(log_dir, exist_ok=True)
+
+log_file = os.path.join(log_dir, "bot.log")
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("../logs/bot.log", encoding="utf-8"),
+        logging.FileHandler(log_file, encoding="utf-8"),
         logging.StreamHandler(),
     ],
 )
