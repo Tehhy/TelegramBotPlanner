@@ -21,14 +21,31 @@ An intelligent task management assistant integrated with Gemini AI.
 
 ### 🌟 Features                                                                 
 * AI Assistance: Smart task planning and suggestions powered by Gemini.       
+* Multilingual Support: Intelligent language detection and responses in 40+ languages.
 * Voice input via Telegram voice messages. (planned)                                   
-* Audio output for AI responses. (planned)                                              
-* Multi-language support for AI interactions. (planned)                                
+* Audio output for AI responses. (planned)                                               
 * Web search capabilities for AI responses. (planned)                                  
 * Integrated maps and route planning. (planned)                                     
 * Integrated calendar API (Google/iOS). (planned)           
 * Note-taking functionality. (planned)          
 * AI response styles options. (planned)
+
+## 🛠 AI Features & Usage
+
+### 🌍 Language Support
+The bot features native multilingual support powered by Gemini AI:
+* **Auto-Detection:** Simply send a message in your language (Russian, English, Spanish, etc.), and the AI will detect it automatically.
+* **Context Preservation:** The bot maintains the conversation in the language you started with.
+* **Smart Fallback:** If the language is unclear, the bot defaults to English to ensure a response.
+
+### 📝 Interaction Tips
+* **Task Planning:** Ask the bot to "Organize my day" or "Create a workout schedule". It will provide structured, bullet-point plans.
+* **Concise Responses:** The AI is instructed to be brief and actionable. 
+* **Large Requests:** If a response exceeds Telegram's limits, the bot automatically splits the text into multiple messages to ensure no information is lost.
+
+### 🤖 Commands
+* `/start` — Initialize the bot and get a welcome message.
+* **Direct Input** — Send any text or task description to get an AI-powered response.
    
 ## 🧹 Development Tools
 We use a modern toolchain to keep the code clean and consistent:
@@ -65,9 +82,11 @@ poetry install
 ### 4. Environment Setup
 Create a .env file in the root directory:
 
+```env
 TELEGRAM_TOKEN=your_telegram_bot_token
 GEMINI_API_KEY=your_google_gemini_api_key
 DATABASE_URL=sqlite:///./test.db
+```
 
 ### 5. Installing pre-commit hooks
 To ensure code quality and formatting, install the git hooks:

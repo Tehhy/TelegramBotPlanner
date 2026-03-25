@@ -1,7 +1,12 @@
-import logging
 import os
 
-from my_bot.Telebot import bot
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import logging  # noqa: E402
+
+from my_bot.Telebot import bot  # noqa: E402
 
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
