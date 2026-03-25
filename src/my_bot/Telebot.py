@@ -1,10 +1,37 @@
+import logging
 import os
 import random
 
 import telebot
 
+from .ai_logic import get_new_chat
+
+logger = logging.getLogger(__name__)
+logger.info("Bot handlers and AI logic loaded")
+
 token = os.environ.get("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(token)
+
+user_chats = {}
+
+
+@bot.message_handler(commands=["clear"])
+def clear_history(message):
+    user_id = message.from_user.id
+    try:
+        user_chats[user_id] = get_new_chat()
+        bot.send_message(
+            message.chat.id, "🧹 Our conversation history has been erased."
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to clear history for user {user_id}: {e}")
+
+        bot.send_message(
+            message.chat.id,
+            "⚠️ AI service is temporarily unavailable. Please try again later.",
+        )
+
 
 RANDOM_TASKS = [
     "Read a chapter of Ulysses @Reading",
@@ -93,3 +120,29 @@ def show(message):
         else:
             result += f"There are no tasks for date {date}\n"
     bot.send_message(message.chat.id, result)
+
+
+@bot.message_handler(func=lambda message: True)
+def handle_gemini_chat(message):
+    user_id = message.from_user.id if message.from_user else None
+
+    if not user_id:
+        logger.warning("Received a message without a valid user_id")
+        return
+    try:
+        if user_id not in user_chats:
+            user_chats[user_id] = get_new_chat()
+
+        chat = user_chats[user_id]
+
+        logger.info(f"User {user_id} wrote: {message.text[:30]}")
+
+        response = chat.send_message(message.text)
+        bot.reply_to(message, response.text)
+    except Exception as e:
+        logger.error(f"AI Chat Error for user {user_id}: {e}", exc_info=True)
+
+        bot.send_message(
+            message.chat.id,
+            "⚠️ Sorry, I'm having trouble processing your request right now. Please try again later.",
+        )
