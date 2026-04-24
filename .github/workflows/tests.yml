@@ -2,9 +2,11 @@ name: Python application and Tests
 
 on:
   push:
-    branches: [ "master", "ai", "poetry", "pytest", "env_file_and_example" ]
   pull_request:
     branches: [ "master" ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -26,6 +28,12 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --no-root
+
+      - name: Run Ruff Check
+        run: poetry run ruff check .
+
+      - name: Run Ruff Format Check
+        run: poetry run ruff format --check .
 
       - name: Run tests
         env:

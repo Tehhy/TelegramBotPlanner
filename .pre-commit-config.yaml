@@ -6,13 +6,6 @@ repos:
         args: [ --fix ]
       - id: ruff-format
 
-  - repo: https://github.com/pycqa/isort
-    rev: 8.0.1
-    hooks:
-      - id: isort
-        name: isort (python)
 
-  - repo: https://github.com/psf/black
-    rev: 26.1.0
-    hooks:
-      - id: black
+
+
