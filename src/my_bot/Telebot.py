@@ -5,18 +5,24 @@ import random
 import telebot
 
 from .ai_logic import get_new_chat
+from typing import Dict, List, Any
+from telebot import types
 
 logger = logging.getLogger(__name__)
 logger.info("Bot handlers and AI logic loaded")
 
 token = os.environ.get("TELEGRAM_TOKEN")
+if token is None:
+    raise ValueError("TELEGRAM_TOKEN is not set in environment variables")
 bot = telebot.TeleBot(token)
 
-user_chats = {}
+user_chats: Dict[int, Any] = {}
 
 
 @bot.message_handler(commands=["clear"])
-def clear_history(message):
+def clear_history(message: types.Message) -> None:
+    if message.from_user is None:
+        return
     user_id = message.from_user.id
     try:
         user_chats[user_id] = get_new_chat()
@@ -49,10 +55,10 @@ HELP = """
 /show, /print - show all tasks added for the specified dates.
 /random - add a random task for the date Today."""
 
-tasks = {}
+tasks: Dict[str, List[str]] = {}
 
 
-def add_todo(date, task):
+def add_todo(date: str, task: str) -> None:
     if date in tasks:
         tasks[date].append(task)
     else:
@@ -60,12 +66,14 @@ def add_todo(date, task):
 
 
 @bot.message_handler(commands=["help"])
-def help(message):
+def help(message: types.Message) -> None:
     bot.send_message(message.chat.id, HELP)
 
 
 @bot.message_handler(commands=["add", "todo"])
-def add(message):
+def add(message: types.Message) -> None:
+    if message.text is None:
+        return
     try:
         command = message.text.split(maxsplit=1)
         if len(command) < 2:
@@ -95,7 +103,7 @@ def add(message):
 
 
 @bot.message_handler(commands=["random"])
-def random_add(message):
+def random_add(message: types.Message) -> None:
     date = "today"
     task = random.choice(RANDOM_TASKS)
     add_todo(date, task)
@@ -103,7 +111,9 @@ def random_add(message):
 
 
 @bot.message_handler(commands=["show", "print"])
-def show(message):
+def show(message: types.Message) -> None:
+    if message.text is None:  # Исправление для Mypy
+        return
     command = message.text.split()
     if len(command) < 2:
         bot.send_message(
