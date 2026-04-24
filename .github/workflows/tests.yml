@@ -35,6 +35,9 @@ jobs:
       - name: Run Ruff Format Check
         run: poetry run ruff format --check .
 
+      - name: Run Static Type Check (Mypy)
+        run: poetry run mypy src
+
       - name: Run tests
         env:
           PYTHONPATH: ./src

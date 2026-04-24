@@ -48,11 +48,9 @@ The bot features native multilingual support powered by Gemini AI:
 * **Direct Input** — Send any text or task description to get an AI-powered response.
    
 ## 🧹 Development Tools
-We use a modern toolchain to keep the code clean and consistent:
 * **Pre-commit** — Framework for managing git hooks.
 * **Ruff** — An extremely fast Python linter and code formatter.
-* **Black** — The uncompromising code formatter.
-* **Isort** — Proper sorting of imports.
+* **Mypy** for static type checking.
 
 ### 💡 Best Practices in this Project
 * **Lazy Loading:** Heavy AI libraries (`google-generativeai`) are imported only when needed to save memory.
@@ -96,6 +94,12 @@ poetry run pre-commit install
 To run all checks manually:
 ```bash
 poetry run pre-commit run --all-files
+```
+Or run specific tools directly via Poetry:
+```bash
+poetry run ruff check .    # Linting
+poetry run ruff format .   # Formatting
+poetry run mypy src        # Type checking
 ```
 
 ### 6. Running the Bot

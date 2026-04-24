@@ -21,10 +21,18 @@ dev = [
     "pytest (>=9.0.2,<10.0.0)",
     "pre-commit (>=4.5.1,<5.0.0)",
     "ruff (>=0.15.4,<0.16.0)",
-    "pytest-env (>=1.6.0,<2.0.0)"
+    "pytest-env (>=1.6.0,<2.0.0)",
+    "mypy (>=1.20.2,<2.0.0)"
 ]
 
 [tool.pytest.ini_options]
 env = [
     "TELEGRAM_TOKEN=12345:fake_token_for_tests",
 ]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+ignore_missing_imports = true
+explicit_package_bases = true
+exclude = ["venv", ".venv"]
