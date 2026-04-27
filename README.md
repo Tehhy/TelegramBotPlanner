@@ -114,6 +114,26 @@ To run the automated test suite, use:
 poetry run pytest
 ```
 
+### 8. Running with Docker
+The easiest way to get the bot up and running is by using Docker. This ensures a consistent environment regardless of your operating system.
+
+#### Prerequisites
+* Docker installed and running.
+* Docker Compose installed.
+
+1. Configure Environment: Create a .env file in the root directory and add your telegram token:
+```bash
+TELEGRAM_TOKEN=your_token_here
+```
+2. Launch the Bot: Run the following command in your terminal:
+   ```bash
+   docker compose up -d --build
+   ```
+#### Management Commands
+* Stop the bot: docker compose down
+* View logs: docker compose logs -f
+* Restart the bot: docker compose restart
+
 ## ⚙️ Environment Variables
 
 The following variables must be defined in your `.env` file or system environment. 
