@@ -1,0 +1,9 @@
+services:
+  bot:
+    build: .
+    container_name: telegram_planner_bot
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
