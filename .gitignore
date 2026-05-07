@@ -7,3 +7,5 @@ logs/
 data/todo.db
 *.db
 *.sqlite3
+.coverage
+htmlcov/

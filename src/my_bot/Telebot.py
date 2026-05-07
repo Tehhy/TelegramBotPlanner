@@ -9,6 +9,7 @@ from telebot import types
 from my_bot import models
 from my_bot.models import Task
 
+
 logger = logging.getLogger(__name__)
 logger.info("Bot handlers and AI logic loaded")
 
@@ -52,7 +53,8 @@ RANDOM_TASKS = [
     "Fix the damn door @HomeSweetHome",
     "Dance party with kids @Family",
     "Wash the car @Car",
-    "Go for a walk @SportCall Mom @Family",
+    "Go for a walk @Sport",
+    "Call Mom @Family",
 ]
 
 HELP = """
@@ -109,6 +111,7 @@ def add(message: types.Message) -> None:
 
 @bot.message_handler(commands=["random"])
 def random_add(message: types.Message) -> None:
+    """Adds a random task from the existing ones for tomorrow."""
     if message.from_user is None:
         return
 
