@@ -1,0 +1,3 @@
+[run]
+source = src/my_bot
+omit = src/my_bot/run.py

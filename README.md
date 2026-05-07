@@ -113,6 +113,11 @@ To run the automated test suite, use:
 ```bash
 poetry run pytest
 ```
+To view coverage, run:
+```bash
+poetry run pytest --cov=src/my_bot --cov-report=term-missing
+poetry run pytest --cov=src/my_bot --cov-report=html
+```
 
 ### 8. Running with Docker
 The easiest way to get the bot up and running is by using Docker. This ensures a consistent environment regardless of your operating system.
