@@ -1,6 +1,6 @@
 import logging
 import os
-
+import random
 import telebot
 
 from .ai_logic import get_new_chat
@@ -50,8 +50,9 @@ RANDOM_TASKS = [
     "Give away some clothes @Karma",
     "Pick up litter in the neighbourhood @Karma",
     "Fix the damn door @HomeSweetHome",
-    "Dance party with kids @Kids",
+    "Dance party with kids @Family",
     "Wash the car @Car",
+    "Go for a walk @SportCall Mom @Family",
 ]
 
 HELP = """
@@ -62,7 +63,7 @@ HELP = """
 
 
 @bot.message_handler(commands=["help"])
-def help(message: types.Message) -> None:
+def help_handler(message: types.Message) -> None:
     bot.send_message(message.chat.id, HELP)
 
 
@@ -72,21 +73,32 @@ def add(message: types.Message) -> None:
         return
     if message.text is None:
         return
-    parts = message.text.split(maxsplit=2)
-    if len(parts) < 3:
+    original_text = message.text.replace("/add", "").strip()
+    parts = original_text.split(maxsplit=1)
+    if len(parts) < 2:
         bot.send_message(message.chat.id, "Usage: /add <date> <task> @<category>")
         return
 
-    date = parts[1].lower()
-    task_text = parts[2]
+    date = parts[0].lower()
+    task_text = parts[1]
     user_id = message.from_user.id
+
+    if "@" in task_text:
+        task_text, category = task_text.rsplit("@", 1)
+        task_text = task_text.strip()
+        category = category.strip()
+    else:
+        task_text = task_text.strip()
+        category = "General"
 
     db = models.SessionLocal()
     try:
-        new_task = Task(user_id=user_id, date=date, text=task_text)
+        new_task = Task(user_id=user_id, date=date, text=task_text, category=category)
         db.add(new_task)
         db.commit()
-        bot.send_message(message.chat.id, f"✅ Task added for {date}")
+        bot.send_message(
+            message.chat.id, f"✅ Task added for {date} in category @{category}!"
+        )
     except Exception as e:
         db.rollback()
         logger.error(f"Error adding task for {user_id}: {e}")
@@ -99,18 +111,33 @@ def add(message: types.Message) -> None:
 def random_add(message: types.Message) -> None:
     if message.from_user is None:
         return
-    user_id = message.from_user.id
-    date = "tomorrow"
-    task_text = "Learn something new with AI"  # Или любая логика рандома
 
+    user_id = message.from_user.id
     db = models.SessionLocal()
+
     try:
-        new_task = Task(user_id=user_id, date=date, text=task_text)
+        raw_task = random.choice(RANDOM_TASKS)
+
+        if "@" in raw_task:
+            task_text, category = raw_task.rsplit("@", 1)
+            task_text = task_text.strip()
+            category = category.strip()
+        else:
+            task_text = raw_task
+            category = "General"
+
+        new_task = Task(
+            user_id=user_id, date="tomorrow", text=task_text, category=category
+        )
+
         db.add(new_task)
         db.commit()
+
         bot.send_message(
-            message.chat.id, f"🎲 Random task added for {date}: {task_text}"
+            message.chat.id,
+            f"🎲 Random idea for tomorrow:\n\n📝 {task_text} (Category: {category})",
         )
+
     except Exception as e:
         db.rollback()
         logger.error(f"Error in random task for {user_id}: {e}")
@@ -140,8 +167,8 @@ def show(message: types.Message) -> None:
 
             response += f"📅 {date.upper()}:\n"
             if tasks:
-                for t in tasks:
-                    response += f"- {t.text}\n"
+                for task in tasks:
+                    response += f"• [{task.category}] {task.text}\n"
             else:
                 response += "No tasks planned.\n"
             response += "\n"

@@ -10,12 +10,20 @@ def test_add_new_date(db_session):
     message.chat.id = 123
     message.text = "/add 2026-05-01 Buy milk @Shopping"
 
-    with patch("my_bot.Telebot.bot"):
+    with patch("my_bot.Telebot.bot") as mock_bot:
+        from my_bot.Telebot import add
+
         add(message)
 
     task = db_session.query(Task).filter_by(user_id=123, date="2026-05-01").first()
+
     assert task is not None
-    assert task.text == "Buy milk @Shopping"
+    assert task.text == "Buy milk"
+    assert task.category == "Shopping"
+
+    mock_bot.send_message.assert_called_with(
+        123, "✅ Task added for 2026-05-01 in category @Shopping!"
+    )
 
 
 def test_add_multiple_tasks(db_session):

@@ -5,3 +5,5 @@ __pycache__/
 logs/
 *.log
 data/todo.db
+*.db
+*.sqlite3

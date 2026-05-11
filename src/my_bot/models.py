@@ -24,6 +24,7 @@ class Task(Base):
     user_id: Mapped[int] = mapped_column(index=True)
     date: Mapped[str] = mapped_column(String)
     text: Mapped[str] = mapped_column(Text)
+    category: Mapped[str] = mapped_column(String, default="General")
 
 
 def init_db() -> None:
