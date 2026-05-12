@@ -8,6 +8,9 @@ import logging  # noqa: E402
 
 from my_bot.Telebot import bot  # noqa: E402
 
+from my_bot.models import init_db  # noqa: E402
+
+
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
 
@@ -24,8 +27,17 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
 if __name__ == "__main__":
-    logger.info("Starting the application...")
+    logger.info("Initializing database...")
+    try:
+        init_db()
+        logger.info("Database initialized successfully.")
+    except Exception as e:
+        logger.critical(f"Failed to initialize database: {e}", exc_info=True)
+        exit(1)
+
+    logger.info("Starting the bot polling...")
     try:
         bot.polling(none_stop=True)
     except Exception as e:

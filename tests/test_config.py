@@ -1,6 +1,6 @@
 import os
-
-from my_bot.Telebot import tasks
+from my_bot import models
+from my_bot.models import Task
 
 
 def test_telegram_token_is_set():
@@ -12,10 +12,10 @@ def test_telegram_token_is_set():
     )
 
 
-def test_tasks_is_empty_initially():
-    """Check if the tasks dictionary is imported correctly and is empty (fixture check)"""
-    # If the 'autouse=True' fixture is working, tasks will always be {} at the start
-    assert isinstance(tasks, dict), "The 'tasks' object should be a dictionary"
-    assert len(tasks) == 0, (
-        "The 'tasks' dictionary should be empty at the start of the test"
-    )
+def test_database_is_accessible(db_session):
+    """Checks that SQLAlchemy and tables are initialized correctly."""
+    count = db_session.query(Task).count()
+
+    assert count == 0, "Database should be empty at the start of the test session"
+
+    assert models.SessionLocal is not None
