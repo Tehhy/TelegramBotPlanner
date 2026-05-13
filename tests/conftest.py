@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from my_bot.models import Base
+from my_bot.models import Base, Task
 
 
 TEST_DATABASE_URL = "sqlite:///:memory:"
@@ -40,3 +40,14 @@ def db_session(engine, tables):
 def mock_db(monkeypatch, db_session):
     """Automatically replaces SessionLocal in the code with a test session."""
     monkeypatch.setattr("my_bot.Telebot.models.SessionLocal", lambda: db_session)
+
+
+@pytest.fixture
+def create_task(db_session):
+    def _create(user_id, date="today", text="Test Task", category="General"):
+        task = Task(user_id=user_id, date=date, text=text, category=category)
+        db_session.add(task)
+        db_session.flush()
+        return task
+
+    return _create
