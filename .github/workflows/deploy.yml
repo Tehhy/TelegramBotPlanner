@@ -6,38 +6,83 @@ on:
       - master
   workflow_dispatch: # Allow manual triggering
 
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      REMOTE_BOT_DIR: tgbot-planner
+      DOCKER_IMAGE_NAME: tgbot_planner
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Deploy to Server via SSH
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            mkdir -p ~/tgbot-planner
-            find ~/tgbot-planner -mindepth 1 ! -name '.env' -delete
+      - name: Set image name
+        id: image
+        run: |
+          echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
 
-      - name: Copy files via SSH
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          source: "."
-          target: "~/tgbot-planner"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
-      - name: Rebuild and Restart Docker Container
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:latest
+            ${{ steps.image.outputs.name }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Pull and restart on remote
         uses: appleboy/ssh-action@v1.2.5
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOY_IMAGE: ${{ steps.image.outputs.name }}@${{ steps.build.outputs.digest }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          envs: REGISTRY_USER,REGISTRY_TOKEN,DEPLOY_IMAGE
           script: |
-            cd ~/tgbot-planner
-            docker compose up -d --build
+            set -e
+            mkdir -p "$HOME/${{ env.REMOTE_BOT_DIR }}/data"
+            cd "$HOME/${{ env.REMOTE_BOT_DIR }}"
+            (
+              export DOCKER_CONFIG="$(mktemp -d)"
+              trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+              printf '%s' "$REGISTRY_TOKEN" | docker login ghcr.io \
+                --username "$REGISTRY_USER" --password-stdin
+              docker pull "$DEPLOY_IMAGE"
+            )
+            if docker container inspect ${{ env.DOCKER_IMAGE_NAME }} > /dev/null 2>&1; then
+              docker stop ${{ env.DOCKER_IMAGE_NAME }}
+              docker rm ${{ env.DOCKER_IMAGE_NAME }}
+            fi
+            docker run -d \
+              --name ${{ env.DOCKER_IMAGE_NAME }} \
+              --restart unless-stopped \
+              --env-file .env \
+              -v "$PWD/data:/app/data" \
+              "$DEPLOY_IMAGE"
+            docker image prune -f
